@@ -1,4 +1,4 @@
-import React, { forwardRef, useState, useRef, useCallback } from "react";
+import React, { forwardRef, useState, useRef, useCallback, useEffect } from "react";
 import {
   Button,
   Dialog,
@@ -6,6 +6,8 @@ import {
   Slide,
   makeStyles,
   CircularProgress,
+  Typography,
+  Box,
 } from "@material-ui/core";
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
@@ -16,8 +18,8 @@ const useStyles = makeStyles((theme) => ({
   button: {
     display: "flex",
     flexDirection: "column",
-    marginTop: 50,
-    marginBottom: 50,
+    marginTop: 20,
+    marginBottom: 20,
     margin: "auto",
     width: "fit-content",
   },
@@ -25,6 +27,18 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     maxHeight: "300px",
     objectFit: "contain",
+    border: '1px solid #e0e0e0',
+    borderRadius: '4px',
+    backgroundColor: '#f5f5f5'
+  },
+  existingPreview: {
+    width: "100%",
+    maxHeight: "200px",
+    objectFit: "contain",
+    border: '1px dashed #2196f3',
+    borderRadius: '4px',
+    backgroundColor: '#f8f9fa',
+    padding: '8px'
   },
   loading: {
     display: "flex",
@@ -38,10 +52,9 @@ const Transition = forwardRef(function Transition(props, ref) {
 });
 
 const CameraComponent = ({
-  input: { onChange },
-  bucketName = "gambar", // Default jika tidak ada prop bucketName yang diberikan
-  folderPath = "camera-photos", // Default jika tidak ada prop folderPath yang diberikan
-  // Anda juga akan menerima 'source', 'label' dll dari props yang diteruskan oleh <Field>
+  input: { value, onChange },
+  bucketName = "gambar",
+  folderPath = "camera-photos",
   ...rest
 }) => {
   const classes = useStyles();
@@ -50,40 +63,61 @@ const CameraComponent = ({
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(null);
+  const [existingImage, setExistingImage] = useState(null);
   const webcamRef = React.useRef(null);
+
+  // Effect untuk handle existing image dari value
+  useEffect(() => {
+    if (value) {
+      let imageUrl = null;
+
+      if (typeof value === 'string' && value.startsWith('http')) {
+        imageUrl = value;
+      } else if (value && typeof value === 'object') {
+        imageUrl = value.src || value.path || value.url;
+      }
+
+      if (imageUrl && imageUrl !== preview) {
+        setExistingImage(imageUrl);
+      }
+    } else {
+      setExistingImage(null);
+    }
+  }, [value, preview]);
 
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  // Fungsi untuk mengambil foto dari webcam
   const capture = React.useCallback(() => {
     const screenshot = webcamRef.current.getScreenshot();
     setImgSrc(screenshot);
     handleClose();
   }, [webcamRef]);
 
-  // Fungsi untuk upload gambar ke Supabase Storage menggunakan data provider
   const uploadToSupabase = async (blob) => {
     try {
       setLoading(true);
       const fileName = `photo_${Date.now()}.jpg`;
       const file = new File([blob], fileName, { type: "image/jpeg" });
 
-      // Gunakan bucketName dan folderPath dari props
       const { url, path } = await dataProvider.uploadFile(
         file,
-        bucketName, // <-- Gunakan bucketName dari prop
-        folderPath  // <-- Gunakan folderPath dari prop
+        bucketName,
+        folderPath
       );
 
       const fileData = {
         src: url,
         path: path,
-        bucket: bucketName, // Simpan juga bucket yang digunakan
+        bucket: bucketName,
         title: fileName,
       };
+
       onChange(fileData);
       setPreview(url);
+      setExistingImage(null); // Clear existing image when new one is taken
+
+      console.log("Camera upload successful:", url);
     } catch (error) {
       console.error("Error uploading image:", error);
       alert("Gagal mengupload gambar!");
@@ -92,7 +126,6 @@ const CameraComponent = ({
     }
   };
 
-  // Fungsi untuk memproses hasil crop
   const crop = useCallback(() => {
     if (!cropRef.current) return;
 
@@ -108,18 +141,65 @@ const CameraComponent = ({
     );
   }, []);
 
+  const handleRemoveImage = () => {
+    setPreview(null);
+    setExistingImage(null);
+    setImgSrc(null);
+    onChange(null);
+  };
+
   return (
     <div>
-      {/* Tampilkan preview gambar jika sudah ada */}
+      {/* Tampilkan existing image jika ada dan belum ada preview baru */}
+      {existingImage && !preview && (
+        <Box mb={2} p={2} border={1} borderColor="primary.main" borderRadius={4}>
+          <Typography variant="subtitle2" gutterBottom color="primary">
+            📷 Gambar Tersimpan:
+          </Typography>
+          <img
+            src={existingImage}
+            alt="Existing"
+            className={classes.existingPreview}
+          />
+          <Box mt={1}>
+            <Button
+              size="small"
+              color="secondary"
+              onClick={handleRemoveImage}
+              variant="outlined"
+            >
+              Hapus Gambar
+            </Button>
+          </Box>
+        </Box>
+      )}
+
+      {/* Tampilkan preview gambar baru jika sudah ada */}
       {preview && (
-        <div style={{ marginBottom: 15 }}>
+        <Box mb={2} p={2} border={1} borderColor="success.main" borderRadius={4}>
+          <Typography variant="subtitle2" gutterBottom color="primary">
+            ✅ Foto Baru Tersimpan:
+          </Typography>
           <img src={preview} alt="Preview" className={classes.previewImage} />
-        </div>
+          <Box mt={1}>
+            <Button
+              size="small"
+              color="secondary"
+              onClick={handleRemoveImage}
+              variant="outlined"
+            >
+              Hapus Foto Baru
+            </Button>
+          </Box>
+        </Box>
       )}
 
       {/* Tampilkan cropper jika foto sudah diambil tapi belum di-crop */}
       {imgSrc && !preview && (
-        <>
+        <Box mb={2}>
+          <Typography variant="subtitle2" gutterBottom>
+            📐 Sesuaikan Area Foto:
+          </Typography>
           <Cropper
             ref={cropRef}
             src={imgSrc}
@@ -127,55 +207,76 @@ const CameraComponent = ({
             aspectRatio={3 / 4}
             guides={false}
           />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={crop}
-            disabled={loading}
-            style={{ marginTop: 10 }}
-          >
-            {loading ? "Sedang Memproses..." : "Gunakan Foto Ini"}
-          </Button>
+          <Box mt={1} display="flex" gap={1}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={crop}
+              disabled={loading}
+            >
+              {loading ? "Sedang Memproses..." : "Gunakan Foto Ini"}
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => setImgSrc(null)}
+              disabled={loading}
+            >
+              Batal
+            </Button>
+          </Box>
 
           {loading && (
             <div className={classes.loading}>
               <CircularProgress size={24} />
+              <Typography variant="body2" style={{ marginLeft: 10 }}>
+                Mengupload foto...
+              </Typography>
             </div>
           )}
-        </>
+        </Box>
       )}
 
+      {/* Button untuk buka kamera */}
       <Button
         variant="outlined"
         color="primary"
         onClick={handleClickOpen}
         className={classes.button}
         disabled={loading}
+        size="large"
       >
-        {preview ? "Ganti Foto" : "Aktifkan Kamera"}
+        {existingImage && !preview ? "📷 Ganti dengan Kamera" :
+          preview ? "📷 Ambil Foto Lagi" :
+            "📷 Aktifkan Kamera"}
       </Button>
 
+      {/* Dialog kamera */}
       <Dialog
         open={open}
         TransitionComponent={Transition}
         keepMounted
         onClose={handleClose}
-        aria-labelledby="alert-dialog-slide-title"
-        aria-describedby="alert-dialog-slide-description"
+        aria-labelledby="camera-dialog-title"
         fullWidth
+        maxWidth="md"
       >
-        <Webcam
-          ref={webcamRef}
-          videoConstraints={{ facingMode: "environment" }}
-          screenshotFormat="image/jpeg"
-          style={{ width: "100%", height: "auto" }}
-        />
+        <Box p={2}>
+          <Typography variant="h6" gutterBottom>
+            📷 Ambil Foto
+          </Typography>
+          <Webcam
+            ref={webcamRef}
+            videoConstraints={{ facingMode: "environment" }}
+            screenshotFormat="image/jpeg"
+            style={{ width: "100%", height: "auto", borderRadius: '8px' }}
+          />
+        </Box>
         <DialogActions>
           <Button onClick={handleClose} color="secondary">
             Batal
           </Button>
-          <Button onClick={capture} color="primary">
-            Ambil Foto
+          <Button onClick={capture} color="primary" variant="contained">
+            📸 Ambil Foto
           </Button>
         </DialogActions>
       </Dialog>
