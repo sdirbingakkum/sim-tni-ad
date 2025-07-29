@@ -211,7 +211,7 @@
 //             height={30}
 //           />
 //         )}
-            
+
 //         {/* Fingerprint */}
 //         {sidikStatus === "loaded" && (
 //           <Image
@@ -370,7 +370,7 @@
 //           />
 //         )}
 
-        
+
 //       </Layer>
 //     </Stage>
 //   );
@@ -576,20 +576,20 @@ const SimCanvasDepan = forwardRef((props, ref) => {
           <Image
             image={tanda_tangan_pemohon}
             x={-25}
-            y={150}
+            y={160}
             width={150}
             height={30}
           />
         )}
-            
+
         {/* Fingerprint */}
         {sidikStatus === "loaded" && (
           <Image
             image={sidik_jari_pemohon}
             x={10}
-            y={75}
-            scaleY={0.13}
-            scaleX={0.13}
+            y={85}
+            scaleY={0.10}
+            scaleX={0.10}
           />
         )}
 
@@ -740,7 +740,7 @@ const SimCanvasDepan = forwardRef((props, ref) => {
           />
         )}
 
-        
+
       </Layer>
     </Stage>
   );
