@@ -173,10 +173,10 @@ const SimCreate = ({ permissions, ...props }) => {
             <SelectInput optionText="nama" />
           </ReferenceInput>
           <FormDataConsumer subscription={{ values: true }}>
-            {({ formData, ...rest }) => isPrajuritTniAd(formData) && (
+            {({ formData, ...rest }) => (isPrajuritTniAd(formData) || isPnsTniAd(formData)) && (
               <TextInput 
                 source="pemohon.no_ktp_prajurit" 
-                label="No. KTP Prajurit" 
+                label="No. KTA" 
                 {...rest}
                 isRequired={true}
               />
