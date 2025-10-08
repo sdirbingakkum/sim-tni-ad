@@ -60,39 +60,47 @@ const SimCreate = ({ permissions, ...props }) => {
     { source: "sidik_jari", bucket: SIM_BUCKET, folder: SIM_SIDIK_JARI_FOLDER, fileNameField: "sidik_jari_path" },
   ];
 
-  // handleSave - tambahkan logic untuk no_ktp_prajurit
+  // Transform function untuk memastikan no_ktp_prajurit selalu ada
+  const transform = (data) => {
+    console.log("🔄 TRANSFORM called - Original data:", data);
+    
+    // Pastikan pemohon ada
+    if (!data.pemohon) {
+      data.pemohon = {};
+    }
+    
+    // Pastikan no_ktp_prajurit selalu ada value (minimal "-")
+    if (!data.pemohon.no_ktp_prajurit || data.pemohon.no_ktp_prajurit.trim() === "") {
+      data.pemohon.no_ktp_prajurit = "-";
+      console.log("✏️ Set default no_ktp_prajurit: '-'");
+    }
+    
+    // Tambahkan berlaku_hingga
+    data.berlaku_hingga = moment(data.created || now)
+      .add(5, "y")
+      .format("YYYY-MM-DD");
+    
+    console.log("✅ TRANSFORM result:", data);
+    return data;
+  };
+
+  // handleSave - sekarang lebih sederhana karena transform sudah handle logic
   const handleSave = async (values) => {
     try {
-      console.log("📝 Saving SIM with instant uploaded files:", values);
-      console.log("📋 Form values pemohon:", values.pemohon);
+      console.log("📝 handleSave called with values:", values);
 
-      // Pastikan no_ktp_prajurit selalu ada valuenya
-      // Jika kosong/undefined/null, set default "-"
-      const noKtpPrajurit = values.pemohon?.no_ktp_prajurit?.trim() || "-";
-
-      console.log("🔑 no_ktp_prajurit value:", noKtpPrajurit);
-
-      const dataToSave = {
-        ...values,
-        berlaku_hingga: moment(values.created || now)
-          .add(5, "y")
-          .format("YYYY-MM-DD"),
-        pemohon: {
-          ...values.pemohon,
-          no_ktp_prajurit: noKtpPrajurit, // Selalu ada value, minimal "-"
-        }
-      };
-
-      console.log("💾 Data to save:", dataToSave);
+      const transformedData = transform({ ...values });
+      
+      console.log("💾 Sending to dataProvider:", transformedData);
 
       // File sudah di-upload secara instant, dataProvider hanya perlu handle metadata
-      const result = await dataProvider.create("sim", { data: dataToSave }, fileFields);
+      const result = await dataProvider.create("sim", { data: transformedData }, fileFields);
 
-      console.log("✅ SIM created successfully with instant uploaded files");
+      console.log("✅ SIM created successfully");
       return result;
     } catch (error) {
-      console.error("❌ Error saving SIM data:", error);
-      console.error("❌ Error details:", error.message);
+      console.error("❌ Error in handleSave:", error);
+      console.error("❌ Error message:", error.message);
       throw error;
     }
   };
@@ -104,6 +112,7 @@ const SimCreate = ({ permissions, ...props }) => {
         initialValues={initialValues}
         variant="outlined"
         save={handleSave}
+        transform={transform}
       >
         <FormTab label="Keterangan Edited">
           <DateInput source="created" label="Tanggal Permohonan" />
