@@ -91,7 +91,7 @@ const SimCreate = ({ permissions, ...props }) => {
         variant="outlined"
         save={handleSave}
       >
-        <FormTab label="Keterangan">
+        <FormTab label="Keterangan Edited">
           <DateInput source="created" label="Tanggal Permohonan" />
           <ReferenceInput source="permohonan_sim_tni_id" reference="permohonan_sim_tni" label="Permohonan SIM TNI" sort={{ field: "id", order: "ASC" }} isRequired>
             <SelectInput optionText="nama" />
