@@ -64,17 +64,13 @@ const SimCreate = ({ permissions, ...props }) => {
   const handleSave = async (values) => {
     try {
       console.log("📝 Saving SIM with instant uploaded files:", values);
+      console.log("📋 Form values pemohon:", values.pemohon);
 
-      // Tentukan nilai no_ktp_prajurit berdasarkan jenis pemohon
-      let noKtpPrajurit = values.pemohon?.no_ktp_prajurit;
-      
-      // Jika bukan Prajurit TNI AD dan no_ktp_prajurit kosong, set default value
-      const jenisPemohonId = values.pemohon?.jenis_pemohon_id;
-      const isPrajurit = jenisPemohonId === 1; // Asumsi: 1 = Prajurit TNI AD
-      
-      if (!isPrajurit && !noKtpPrajurit) {
-        noKtpPrajurit = "-"; // Default value untuk PNS dan Umum
-      }
+      // Pastikan no_ktp_prajurit selalu ada valuenya
+      // Jika kosong/undefined/null, set default "-"
+      const noKtpPrajurit = values.pemohon?.no_ktp_prajurit?.trim() || "-";
+
+      console.log("🔑 no_ktp_prajurit value:", noKtpPrajurit);
 
       const dataToSave = {
         ...values,
@@ -83,9 +79,11 @@ const SimCreate = ({ permissions, ...props }) => {
           .format("YYYY-MM-DD"),
         pemohon: {
           ...values.pemohon,
-          no_ktp_prajurit: noKtpPrajurit,
+          no_ktp_prajurit: noKtpPrajurit, // Selalu ada value, minimal "-"
         }
       };
+
+      console.log("💾 Data to save:", dataToSave);
 
       // File sudah di-upload secara instant, dataProvider hanya perlu handle metadata
       const result = await dataProvider.create("sim", { data: dataToSave }, fileFields);
@@ -94,6 +92,7 @@ const SimCreate = ({ permissions, ...props }) => {
       return result;
     } catch (error) {
       console.error("❌ Error saving SIM data:", error);
+      console.error("❌ Error details:", error.message);
       throw error;
     }
   };
