@@ -26,10 +26,10 @@ import InputJenisPemohon from "./helpers/input/InputJenisPemohon";
 import SimCreateToolbar from "./helpers/create/SimCreateToolbar";
 
 // Import komponen instant upload
-import CameraInput from "../../helpers/input/CameraInput"; // Sudah enhanced
-import SignaturePadInput from "../../helpers/input/SignaturePadInput"; // Sudah enhanced  
-import FingerprintInput from "../../helpers/input/FingerprintInput"; // Sudah enhanced
-import EnhancedImageInput from "../../helpers/input/EnhancedImageInput"; // Baru
+import CameraInput from "../../helpers/input/CameraInput";
+import SignaturePadInput from "../../helpers/input/SignaturePadInput";
+import FingerprintInput from "../../helpers/input/FingerprintInput";
+import EnhancedImageInput from "../../helpers/input/EnhancedImageInput";
 
 import dataProvider from "../../providers/data";
 
@@ -60,16 +60,31 @@ const SimCreate = ({ permissions, ...props }) => {
     { source: "sidik_jari", bucket: SIM_BUCKET, folder: SIM_SIDIK_JARI_FOLDER, fileNameField: "sidik_jari_path" },
   ];
 
-  // handleSave - sekarang file sudah tersimpan, hanya perlu simpan metadata
+  // handleSave - tambahkan logic untuk no_ktp_prajurit
   const handleSave = async (values) => {
     try {
       console.log("📝 Saving SIM with instant uploaded files:", values);
+
+      // Tentukan nilai no_ktp_prajurit berdasarkan jenis pemohon
+      let noKtpPrajurit = values.pemohon?.no_ktp_prajurit;
+      
+      // Jika bukan Prajurit TNI AD dan no_ktp_prajurit kosong, set default value
+      const jenisPemohonId = values.pemohon?.jenis_pemohon_id;
+      const isPrajurit = jenisPemohonId === 1; // Asumsi: 1 = Prajurit TNI AD
+      
+      if (!isPrajurit && !noKtpPrajurit) {
+        noKtpPrajurit = "-"; // Default value untuk PNS dan Umum
+      }
 
       const dataToSave = {
         ...values,
         berlaku_hingga: moment(values.created || now)
           .add(5, "y")
           .format("YYYY-MM-DD"),
+        pemohon: {
+          ...values.pemohon,
+          no_ktp_prajurit: noKtpPrajurit,
+        }
       };
 
       // File sudah di-upload secara instant, dataProvider hanya perlu handle metadata
@@ -151,13 +166,17 @@ const SimCreate = ({ permissions, ...props }) => {
           </ReferenceInput>
           <FormDataConsumer subscription={{ values: true }}>
             {({ formData, ...rest }) => isPrajuritTniAd(formData) && (
-              <TextInput source="pemohon.no_ktp_prajurit" label="No. KTP Prajurit" {...rest} />
+              <TextInput 
+                source="pemohon.no_ktp_prajurit" 
+                label="No. KTP Prajurit" 
+                {...rest}
+                isRequired={true}
+              />
             )}
           </FormDataConsumer>
         </FormTab>
 
         <FormTab label="Pas Foto" path="pas_foto">
-          {/* Info Alert */}
           <Alert severity="info" style={{ marginBottom: 16 }}>
             <Typography variant="body2">
               💡 <strong>Instant Upload:</strong> Semua gambar akan langsung disimpan ke server setelah dipilih/diambil.
