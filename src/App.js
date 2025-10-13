@@ -11,7 +11,6 @@ import PenggunaList from "./resources/pengguna/PenggunaList";
 import auth from "./providers/auth";
 import PemohonList from "./resources/pemohon/PemohonList";
 import route from "./providers/route";
-import SatlakCreate from "./resources/satlak/SatlakCreate";
 import SatlakEdit from "./resources/satlak/SatlakEdit";
 import PenggunaEdit from "./resources/pengguna/PenggunaEdit";
 import PemohonEdit from "./resources/pemohon/PemohonEdit";
