@@ -65,7 +65,7 @@ const App = () => {
     console.log("satlak_id:", permissions.satlak_id, typeof permissions.satlak_id);
     console.log("jenis_pengguna_id:", permissions.jenis_pengguna_id, typeof permissions.jenis_pengguna_id);
     
-    if (permissions.satlak_id === 1 && permissions.jenis_pengguna_id === 1) {
+    if (permissions.satlak_id === 1) {
       console.log("✅ Access granted");
       return SatlakCreate;
     }
