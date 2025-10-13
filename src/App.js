@@ -65,7 +65,6 @@ const App = () => {
               ? SatlakCreate
               : null
           }
-          edit={SatlakCreate}
           edit={SatlakEdit}
           list={SatlakList}
         />,
