@@ -646,7 +646,7 @@ const SimCanvasDepan = forwardRef((props, ref) => {
         <Group x={160} y={108}>
           <Group>
             <Text text="Diberikan di" fontSize={9} fontStyle="bold" />
-            <Text text=":" x={65} fontSize={9} fontStyle="bold" />
+            <Text text=":" x={67} fontSize={9} fontStyle="bold" />
             <Text
               text={safeText(dibuat_di)}
               x={70}
@@ -656,7 +656,7 @@ const SimCanvasDepan = forwardRef((props, ref) => {
           </Group>
           <Group y={10}>
             <Text text="Pada Tanggal" fontSize={9} fontStyle="bold" />
-            <Text text=":" x={65} fontSize={9} fontStyle="bold" />
+            <Text text=":" x={67} fontSize={9} fontStyle="bold" />
             <Text
               text={safeText(pada_tanggal)}
               x={70}
@@ -666,7 +666,7 @@ const SimCanvasDepan = forwardRef((props, ref) => {
           </Group>
           <Group y={20}>
             <Text text="Berlaku Hingga" fontSize={9} fontStyle="bold" />
-            <Text text=":" x={65} fontSize={9} fontStyle="bold" />
+            <Text text=":" x={67} fontSize={9} fontStyle="bold" />
             <Text
               text={safeText(berlaku_hingga)}
               x={70}
