@@ -130,7 +130,7 @@
 //       pas_foto: extractImageData(pas_foto),
 //     });
 //   }, [stempel, tanda_tangan_komandan, tanda_tangan, sidik_jari, pas_foto]);
-
+d
 //   // Load images with appropriate crossOrigin setting
 //   const [stempel_satlak, stempelStatus] = useImage(
 //     imageUrls.stempelSrc,
@@ -646,30 +646,30 @@ const SimCanvasDepan = forwardRef((props, ref) => {
         <Group x={160} y={108}>
           <Group>
             <Text text="Diberikan di" fontSize={9} fontStyle="bold" />
-            <Text text=":" x={80} fontSize={9} fontStyle="bold" />
+            <Text text=":" x={65} fontSize={9} fontStyle="bold" />
             <Text
               text={safeText(dibuat_di)}
-              x={78}
+              x={70}
               fontSize={9}
               fontStyle="bold"
             />
           </Group>
           <Group y={10}>
             <Text text="Pada Tanggal" fontSize={9} fontStyle="bold" />
-            <Text text=":" x={80} fontSize={9} fontStyle="bold" />
+            <Text text=":" x={65} fontSize={9} fontStyle="bold" />
             <Text
               text={safeText(pada_tanggal)}
-              x={78}
+              x={70}
               fontSize={9}
               fontStyle="bold"
             />
           </Group>
           <Group y={20}>
             <Text text="Berlaku Hingga" fontSize={9} fontStyle="bold" />
-            <Text text=":" x={80} fontSize={9} fontStyle="bold" />
+            <Text text=":" x={65} fontSize={9} fontStyle="bold" />
             <Text
               text={safeText(berlaku_hingga)}
-              x={78}
+              x={70}
               fontSize={9}
               fontStyle="bold"
             />
