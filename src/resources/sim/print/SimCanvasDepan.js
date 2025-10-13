@@ -649,7 +649,7 @@ const SimCanvasDepan = forwardRef((props, ref) => {
             <Text text=":" x={80} fontSize={9} fontStyle="bold" />
             <Text
               text={safeText(dibuat_di)}
-              x={90}
+              x={85}
               fontSize={9}
               fontStyle="bold"
             />
@@ -659,7 +659,7 @@ const SimCanvasDepan = forwardRef((props, ref) => {
             <Text text=":" x={80} fontSize={9} fontStyle="bold" />
             <Text
               text={safeText(pada_tanggal)}
-              x={90}
+              x={85}
               fontSize={9}
               fontStyle="bold"
             />
@@ -669,7 +669,7 @@ const SimCanvasDepan = forwardRef((props, ref) => {
             <Text text=":" x={80} fontSize={9} fontStyle="bold" />
             <Text
               text={safeText(berlaku_hingga)}
-              x={90}
+              x={85}
               fontSize={9}
               fontStyle="bold"
             />
