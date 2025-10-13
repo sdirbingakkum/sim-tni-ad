@@ -130,7 +130,7 @@
 //       pas_foto: extractImageData(pas_foto),
 //     });
 //   }, [stempel, tanda_tangan_komandan, tanda_tangan, sidik_jari, pas_foto]);
-d
+
 //   // Load images with appropriate crossOrigin setting
 //   const [stempel_satlak, stempelStatus] = useImage(
 //     imageUrls.stempelSrc,
