@@ -58,16 +58,23 @@ const App = () => {
         />,
         <Resource name="jenis_pengguna" />,
         <Resource
-          name="satlak"
-          options={{ label: "SATLAK" }}
-          create={
-            permissions.satlak_id === 1 && permissions.jenis_pengguna_id === 1
-              ? SatlakCreate
-              : null
-          }
-          edit={SatlakEdit}
-          list={SatlakList}
-        />,
+  name="satlak"
+  options={{ label: "SATLAK" }}
+  create={(() => {
+    console.log("Permissions:", permissions);
+    console.log("satlak_id:", permissions.satlak_id, typeof permissions.satlak_id);
+    console.log("jenis_pengguna_id:", permissions.jenis_pengguna_id, typeof permissions.jenis_pengguna_id);
+    
+    if (permissions.satlak_id === 1 && permissions.jenis_pengguna_id === 1) {
+      console.log("✅ Access granted");
+      return SatlakCreate;
+    }
+    console.log("❌ Access denied");
+    return null;
+  })()}
+  edit={SatlakEdit}
+  list={SatlakList}
+/>,
         <Resource name="ibukota_provinsi" />,
         <Resource name="lingkup" />,
         <Resource name="permohonan_sim_tni" />,
