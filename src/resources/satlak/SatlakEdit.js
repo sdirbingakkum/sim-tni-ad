@@ -11,12 +11,22 @@ import {
   useNotify,
 } from "react-admin";
 import SignaturePadInput from "../../helpers/input/SignaturePadInput";
-import EnhancedImageInput from "../../helpers/input/EnhancedImageInput";
+import CommanderSignatureUpload from "./CommanderSignatureUpload";
 import StempelInput from "../../helpers/input/StempelInput";
 
-// 🔧 SET INI SESUAI KONFIG LAMA SIGNATURE PAD (jangan tebak)
-const BUCKET_TTD_KOMANDAN = "gambar";
-const FOLDER_TTD_KOMANDAN = "tanda_tangan_satlak"; // ← sesuaikan dengan folder lama
+const normalizeSignatureField = (data) => {
+  const v = data?.tanda_tangan_komandan;
+  if (Array.isArray(v)) {
+    const first = v[0];
+    if (typeof first === "string") return first;
+    if (first && typeof first === "object") return first.src || "";
+    return "";
+  }
+  if (typeof v === "object" && v !== null) {
+    return v.src || "";
+  }
+  return v ?? "";
+};
 
 const SatlakTitle = ({ record }) => {
   return <span>Edit SATLAK {record ? `"${record.nama}"` : ""}</span>;
@@ -34,7 +44,13 @@ const SatlakEdit = (props) => {
         notify(`Error: ${error.message}`, { type: "error" });
       }}
     >
-      <TabbedForm variant="outlined">
+      <TabbedForm
+        variant="outlined"
+        transform={(data) => ({
+          ...data,
+          tanda_tangan_komandan: normalizeSignatureField(data),
+        })}
+      >
         <FormTab label="Keterangan">
           <TextInput source="id" disabled />
           <ReferenceInput
@@ -83,15 +99,8 @@ const SatlakEdit = (props) => {
         <FormTab label="Tanda Tangan Komandan">
           {/* Opsi 1: gambar langsung */}
           <SignaturePadInput source="tanda_tangan_komandan" />
-
-          {/* Opsi 2: upload file — tetap ke folder/bucket lama */}
-          <EnhancedImageInput
-            source="tanda_tangan_komandan"
-            label="Unggah Tanda Tangan (opsional)"
-            bucketName={BUCKET_TTD_KOMANDAN}
-            folderPath={FOLDER_TTD_KOMANDAN}
-            placeholder={<p>📁 Letakkan file di sini atau klik untuk memilih</p>}
-          />
+          {/* Opsi 2: upload file */}
+          <CommanderSignatureUpload source="tanda_tangan_komandan" />
         </FormTab>
 
         <FormTab label="Stempel">
