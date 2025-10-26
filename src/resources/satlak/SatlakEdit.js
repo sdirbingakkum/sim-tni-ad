@@ -103,13 +103,7 @@ const SatlakEdit = (props) => {
                     key={url || "pad-empty"} // ⬅️ re-mount saat URL berubah
                     source="tanda_tangan_komandan"
                   />
-                      <EnhancedImageInput
-              source="tanda_tangan_komandan"
-              label="Pilih file tanda tangan baru (akan langsung mengganti yang lama)"
-              bucketName={SIM_BUCKET}
-              folderPath={SIM_TANDA_TANGAN_FOLDER}
-              placeholder={<p>📁 Letakkan file baru di sini untuk mengganti tanda tangan (langsung tersimpan)</p>}
-            />
+                      
                 </Box>
               );
             }}
