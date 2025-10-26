@@ -8,74 +8,15 @@ import {
   AutocompleteInput,
   TextInput,
   NumberInput,
-  FileInput,
-  FileField,
   useNotify,
 } from "react-admin";
 import SignaturePadInput from "../../helpers/input/SignaturePadInput";
 import EnhancedImageInput from "../../helpers/input/EnhancedImageInput";
 import StempelInput from "../../helpers/input/StempelInput";
-import dataProvider from "../../providers/data";
 
-// Custom component for file uploads using the dataProvider
-const SupabaseFileInput = (props) => {
-  const {
-    source,
-    label,
-    accept = "image/*",
-    bucketName = "gambar",
-    folderPath = "stempel",
-  } = props;
-  const notify = useNotify();
-
-  // Format function to handle existing file data stored as URL string
-  const formatFile = (value) => {
-    if (!value) return undefined;
-
-    // If it's just a URL string, convert it to the expected format
-    if (typeof value === "string") {
-      return {
-        src: value,
-        title: value.split("/").pop(),
-      };
-    }
-    return value;
-  };
-
-  const handleFileUpload = async (files) => {
-    if (!files || !files.length) return;
-
-    try {
-      const file = files[0];
-      // Use the dataProvider's uploadFile method
-      const { url, path } = await dataProvider.uploadFile(
-        file,
-        bucketName,
-        folderPath
-      );
-
-      // Format the data as needed for your database
-      return url; // Return just the URL string to save in the database
-    } catch (error) {
-      console.error("Upload error details:", error);
-      notify(`Upload error: ${error.message}`, { type: "error" });
-      return null;
-    }
-  };
-
-  return (
-    <FileInput
-      source={source}
-      label={label}
-      accept={accept}
-      parse={handleFileUpload}
-      format={formatFile}
-      multiple={false}
-    >
-      <FileField source="src" title="title" />
-    </FileInput>
-  );
-};
+// 🔧 SET INI SESUAI KONFIG LAMA SIGNATURE PAD (jangan tebak)
+const BUCKET_TTD_KOMANDAN = "gambar";
+const FOLDER_TTD_KOMANDAN = "tanda_tangan_satlak"; // ← sesuaikan dengan folder lama
 
 const SatlakTitle = ({ record }) => {
   return <span>Edit SATLAK {record ? `"${record.nama}"` : ""}</span>;
@@ -143,10 +84,12 @@ const SatlakEdit = (props) => {
           {/* Opsi 1: gambar langsung */}
           <SignaturePadInput source="tanda_tangan_komandan" />
 
-          {/* Opsi 2: unggah file (tanpa set bucket/folder agar tetap pakai lokasi & pola nama lama) */}
+          {/* Opsi 2: upload file — tetap ke folder/bucket lama */}
           <EnhancedImageInput
             source="tanda_tangan_komandan"
             label="Unggah Tanda Tangan (opsional)"
+            bucketName={BUCKET_TTD_KOMANDAN}
+            folderPath={FOLDER_TTD_KOMANDAN}
             placeholder={<p>📁 Letakkan file di sini atau klik untuk memilih</p>}
           />
         </FormTab>
