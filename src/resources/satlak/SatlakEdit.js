@@ -81,6 +81,14 @@ const SatlakEdit = (props) => {
         </FormTab>
 
         <FormTab label="Tanda Tangan Komandan">
+
+          <EnhancedImageInput
+              source="pas_foto"
+              label="Pilih atau seret file pas foto"
+              bucketName="gambar"
+              folderPath="stempel"
+              placeholder={<p>📁 Letakkan file di sini atau klik untuk memilih (akan langsung disimpan)</p>}
+            />    
           {/* Upload → set field ke STRING URL */}
           <CommanderSignatureUpload source="tanda_tangan_komandan" />
 
