@@ -1,3 +1,4 @@
+// src/resources/satlak/SatlakEdit.js
 import React from "react";
 import {
   Edit,
@@ -9,28 +10,25 @@ import {
   TextInput,
   NumberInput,
   useNotify,
+  FormDataConsumer,    // ⬅️ tambahkan ini
 } from "react-admin";
 import SignaturePadInput from "../../helpers/input/SignaturePadInput";
 import CommanderSignatureUpload from "./CommanderSignatureUpload";
 import StempelInput from "../../helpers/input/StempelInput";
+import Box from "@material-ui/core/Box";
 
-const normalizeSignatureField = (data) => {
-  const v = data?.tanda_tangan_komandan;
+const toStringUrl = (v) => {
   if (Array.isArray(v)) {
-    const first = v[0];
-    if (typeof first === "string") return first;
-    if (first && typeof first === "object") return first.src || "";
+    const f = v[0];
+    if (typeof f === "string") return f;
+    if (f && typeof f === "object") return f.src || "";
     return "";
   }
-  if (typeof v === "object" && v !== null) {
-    return v.src || "";
-  }
+  if (typeof v === "object" && v !== null) return v.src || "";
   return v ?? "";
 };
 
-const SatlakTitle = ({ record }) => {
-  return <span>Edit SATLAK {record ? `"${record.nama}"` : ""}</span>;
-};
+const SatlakTitle = ({ record }) => <span>Edit SATLAK {record ? `"${record.nama}"` : ""}</span>;
 
 const SatlakEdit = (props) => {
   const notify = useNotify();
@@ -48,17 +46,12 @@ const SatlakEdit = (props) => {
         variant="outlined"
         transform={(data) => ({
           ...data,
-          tanda_tangan_komandan: normalizeSignatureField(data),
+          tanda_tangan_komandan: toStringUrl(data?.tanda_tangan_komandan),
         })}
       >
         <FormTab label="Keterangan">
           <TextInput source="id" disabled />
-          <ReferenceInput
-            source="lingkup_id"
-            reference="lingkup"
-            label="Lingkup"
-            sort={{ field: "id", order: "ASC" }}
-          >
+          <ReferenceInput source="lingkup_id" reference="lingkup" label="Lingkup" sort={{ field: "id", order: "ASC" }}>
             <SelectInput optionText="kode" />
           </ReferenceInput>
           <TextInput source="nama" label="Nama" />
@@ -78,29 +71,42 @@ const SatlakEdit = (props) => {
         <FormTab label="Komandan">
           <TextInput source="nama_komandan" label="Nama Komandan" />
           <NumberInput source="nrp_komandan" label="NRP Komandan" />
-          <ReferenceInput
-            source="pangkat_komandan_id"
-            reference="pangkat"
-            label="Pangkat Komandan"
-            sort={{ field: "id", order: "ASC" }}
-          >
+          <ReferenceInput source="pangkat_komandan_id" reference="pangkat" label="Pangkat Komandan" sort={{ field: "id", order: "ASC" }}>
             <AutocompleteInput optionText="kode" />
           </ReferenceInput>
-          <ReferenceInput
-            source="korps_komandan_id"
-            reference="korps"
-            label="Korps Komandan"
-            sort={{ field: "id", order: "ASC" }}
-          >
+          <ReferenceInput source="korps_komandan_id" reference="korps" label="Korps Komandan" sort={{ field: "id", order: "ASC" }}>
             <AutocompleteInput optionText="kode" />
           </ReferenceInput>
         </FormTab>
 
         <FormTab label="Tanda Tangan Komandan">
-          {/* Opsi 1: gambar langsung */}
-          <SignaturePadInput source="tanda_tangan_komandan" />
-          {/* Opsi 2: upload file */}
+          {/* Upload — set field ke STRING URL */}
           <CommanderSignatureUpload source="tanda_tangan_komandan" />
+
+          {/* Sinkron dengan SignaturePad di tempat yang sama */}
+          <FormDataConsumer subscription={{ values: true }}>
+            {({ formData }) => {
+              const url = formData?.tanda_tangan_komandan || "";
+              return (
+                <Box mt={2}>
+                  {url ? (
+                    <Box mb={1}>
+                      <img
+                        src={url}
+                        alt="Preview tanda tangan komandan"
+                        style={{ maxWidth: "100%", height: "auto", borderRadius: 8, opacity: 0.85 }}
+                      />
+                    </Box>
+                  ) : null}
+
+                  <SignaturePadInput
+                    key={url || "pad-empty"} // ⬅️ re-mount saat URL berubah
+                    source="tanda_tangan_komandan"
+                  />
+                </Box>
+              );
+            }}
+          </FormDataConsumer>
         </FormTab>
 
         <FormTab label="Stempel">
