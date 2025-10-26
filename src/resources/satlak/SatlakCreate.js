@@ -8,68 +8,37 @@ import {
   AutocompleteInput,
   TextInput,
   NumberInput,
-  FileInput,
-  FileField,
-  useNotify,
 } from "react-admin";
 import SignaturePadInput from "../../helpers/input/SignaturePadInput";
 import StempelInput from "../../helpers/input/StempelInput";
-import EnhancedImageInput from "../../helpers/input/EnhancedImageInput";
-import dataProvider from "../../providers/data";
+import CommanderSignatureUpload from "./CommanderSignatureUpload";
 
-// Custom component for file uploads using the dataProvider
-const SupabaseFileInput = (props) => {
-  const {
-    source,
-    label,
-    accept = "image/*",
-    bucketName = "images",
-    folderPath = "stempel",
-  } = props;
-  const notify = useNotify();
-
-  const handleFileUpload = async (files) => {
-    if (!files || !files.length) return;
-
-    try {
-      const file = files[0];
-      // Use the dataProvider's uploadFile method
-      const { url, path } = await dataProvider.uploadFile(
-        file,
-        bucketName,
-        folderPath
-      );
-
-      // Format the data as needed for your database
-      return {
-        src: url,
-        path: path,
-        bucket: bucketName,
-        title: file.name,
-      };
-    } catch (error) {
-      notify(`Upload error: ${error.message}`, { type: "error" });
-      return null;
-    }
-  };
-
-  return (
-    <FileInput
-      source={source}
-      label={label}
-      accept={accept}
-      parse={handleFileUpload}
-      multiple={false}
-    >
-      <FileField source="src" title="title" />
-    </FileInput>
-  );
+// Normalizer: pastikan field 'tanda_tangan_komandan' selalu STRING sebelum kirim ke dataProvider
+const normalizeSignatureField = (data) => {
+  const v = data?.tanda_tangan_komandan;
+  if (Array.isArray(v)) {
+    // dari ImageInput: bisa [stringURL] atau [{src}]
+    const first = v[0];
+    if (typeof first === "string") return first;
+    if (first && typeof first === "object") return first.src || "";
+    return "";
+  }
+  if (typeof v === "object" && v !== null) {
+    return v.src || "";
+  }
+  return v ?? ""; // biarkan string lama / kosong
 };
 
 const SatlakCreate = (props) => {
   return (
     <Create {...props} title="Tambah SATLAK">
-      <TabbedForm variant="outlined">
+      <TabbedForm
+        variant="outlined"
+        transform={(data) => ({
+          ...data,
+          tanda_tangan_komandan: normalizeSignatureField(data),
+        })}
+      >
         <FormTab label="Keterangan">
           <ReferenceInput
             source="lingkup_id"
@@ -114,15 +83,10 @@ const SatlakCreate = (props) => {
         </FormTab>
 
         <FormTab label="Tanda Tangan Komandan">
-          {/* Opsi 1: gambar langsung (tidak mengubah lokasi/penamaan file) */}
+          {/* Opsi 1: gambar langsung (signature pad lama) */}
           <SignaturePadInput source="tanda_tangan_komandan" />
-
-          {/* Opsi 2: unggah file (tanpa set bucket/folder agar ikuti logic lama) */}
-          <EnhancedImageInput
-            source="tanda_tangan_komandan"
-            label="Unggah Tanda Tangan (opsional)"
-            placeholder={<p>📁 Letakkan file di sini atau klik untuk memilih</p>}
-          />
+          {/* Opsi 2: upload file (URL string) */}
+          <CommanderSignatureUpload source="tanda_tangan_komandan" />
         </FormTab>
 
         <FormTab label="Stempel">
