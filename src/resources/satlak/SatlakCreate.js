@@ -14,6 +14,7 @@ import {
 } from "react-admin";
 import SignaturePadInput from "../../helpers/input/SignaturePadInput";
 import StempelInput from "../../helpers/input/StempelInput";
+import EnhancedImageInput from "../../helpers/input/EnhancedImageInput";
 import dataProvider from "../../providers/data";
 
 // Custom component for file uploads using the dataProvider
@@ -90,6 +91,7 @@ const SatlakCreate = (props) => {
             <AutocompleteInput optionText="nama" />
           </ReferenceInput>
         </FormTab>
+
         <FormTab label="Komandan">
           <TextInput source="nama_komandan" label="Nama Komandan" />
           <NumberInput source="nrp_komandan" label="NRP Komandan" />
@@ -110,9 +112,19 @@ const SatlakCreate = (props) => {
             <AutocompleteInput optionText="kode" />
           </ReferenceInput>
         </FormTab>
+
         <FormTab label="Tanda Tangan Komandan">
-          <SignaturePadInput />
+          {/* Opsi 1: gambar langsung (tidak mengubah lokasi/penamaan file) */}
+          <SignaturePadInput source="tanda_tangan_komandan" />
+
+          {/* Opsi 2: unggah file (tanpa set bucket/folder agar ikuti logic lama) */}
+          <EnhancedImageInput
+            source="tanda_tangan_komandan"
+            label="Unggah Tanda Tangan (opsional)"
+            placeholder={<p>📁 Letakkan file di sini atau klik untuk memilih</p>}
+          />
         </FormTab>
+
         <FormTab label="Stempel">
           <StempelInput source="stempel" label="Stempel" />
         </FormTab>
