@@ -15,7 +15,6 @@ import SignaturePadInput from "../../helpers/input/SignaturePadInput";
 import StempelInput from "../../helpers/input/StempelInput";
 import CommanderSignatureUpload from "./CommanderSignatureUpload";
 
-// Normalizer: pastikan tanda_tangan_komandan = STRING URL sebelum kirim ke server
 const toStringUrl = (v) => {
   if (Array.isArray(v)) {
     const f = v[0];
@@ -38,23 +37,13 @@ const SatlakCreate = (props) => {
         })}
       >
         <FormTab label="Keterangan">
-          <ReferenceInput
-            source="lingkup_id"
-            reference="lingkup"
-            label="Lingkup"
-            sort={{ field: "id", order: "ASC" }}
-          >
+          <ReferenceInput source="lingkup_id" reference="lingkup" label="Lingkup" sort={{ field: "id", order: "ASC" }}>
             <SelectInput optionText="kode" />
           </ReferenceInput>
           <TextInput source="nama" label="Nama" />
           <TextInput source="kode" label="Kode" />
           <TextInput source="kode_romawi" label="Kode Romawi" />
-          <ReferenceInput
-            source="markas_id"
-            reference="ibukota_provinsi"
-            label="Markas"
-            sort={{ field: "id", order: "ASC" }}
-          >
+          <ReferenceInput source="markas_id" reference="ibukota_provinsi" label="Markas" sort={{ field: "id", order: "ASC" }}>
             <AutocompleteInput optionText="nama" />
           </ReferenceInput>
         </FormTab>
@@ -62,20 +51,10 @@ const SatlakCreate = (props) => {
         <FormTab label="Komandan">
           <TextInput source="nama_komandan" label="Nama Komandan" />
           <NumberInput source="nrp_komandan" label="NRP Komandan" />
-          <ReferenceInput
-            source="pangkat_komandan_id"
-            reference="pangkat"
-            label="Pangkat Komandan"
-            sort={{ field: "id", order: "ASC" }}
-          >
+          <ReferenceInput source="pangkat_komandan_id" reference="pangkat" label="Pangkat Komandan" sort={{ field: "id", order: "ASC" }}>
             <AutocompleteInput optionText="kode" />
           </ReferenceInput>
-          <ReferenceInput
-            source="korps_komandan_id"
-            reference="korps"
-            label="Korps Komandan"
-            sort={{ field: "id", order: "ASC" }}
-          >
+          <ReferenceInput source="korps_komandan_id" reference="korps" label="Korps Komandan" sort={{ field: "id", order: "ASC" }}>
             <AutocompleteInput optionText="kode" />
           </ReferenceInput>
         </FormTab>
@@ -84,7 +63,7 @@ const SatlakCreate = (props) => {
           {/* Upload → set field ke STRING URL */}
           <CommanderSignatureUpload source="tanda_tangan_komandan" />
 
-          {/* Preview + sinkron dengan SignaturePad */}
+          {/* Preview + sinkron SignaturePad */}
           <FormDataConsumer subscription={{ values: true }}>
             {({ formData }) => {
               const url = formData?.tanda_tangan_komandan || "";
@@ -99,7 +78,6 @@ const SatlakCreate = (props) => {
                       />
                     </Box>
                   ) : null}
-                  {/* Paksa SignaturePad re-init saat URL berubah */}
                   <SignaturePadInput
                     key={url || "pad-empty"}
                     source="tanda_tangan_komandan"
