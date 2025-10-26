@@ -13,6 +13,7 @@ import {
   useNotify,
 } from "react-admin";
 import SignaturePadInput from "../../helpers/input/SignaturePadInput";
+import EnhancedImageInput from "../../helpers/input/EnhancedImageInput";
 import StempelInput from "../../helpers/input/StempelInput";
 import dataProvider from "../../providers/data";
 
@@ -111,11 +112,12 @@ const SatlakEdit = (props) => {
             reference="ibukota_provinsi"
             label="Markas"
             sort={{ field: "id", order: "ASC" }}
- perPage={100}
+            perPage={100}
           >
             <AutocompleteInput optionText="nama" />
           </ReferenceInput>
         </FormTab>
+
         <FormTab label="Komandan">
           <TextInput source="nama_komandan" label="Nama Komandan" />
           <NumberInput source="nrp_komandan" label="NRP Komandan" />
@@ -136,9 +138,19 @@ const SatlakEdit = (props) => {
             <AutocompleteInput optionText="kode" />
           </ReferenceInput>
         </FormTab>
+
         <FormTab label="Tanda Tangan Komandan">
+          {/* Opsi 1: gambar langsung */}
           <SignaturePadInput source="tanda_tangan_komandan" />
+
+          {/* Opsi 2: unggah file (tanpa set bucket/folder agar tetap pakai lokasi & pola nama lama) */}
+          <EnhancedImageInput
+            source="tanda_tangan_komandan"
+            label="Unggah Tanda Tangan (opsional)"
+            placeholder={<p>📁 Letakkan file di sini atau klik untuk memilih</p>}
+          />
         </FormTab>
+
         <FormTab label="Stempel">
           <StempelInput source="stempel" label="Stempel" />
         </FormTab>
