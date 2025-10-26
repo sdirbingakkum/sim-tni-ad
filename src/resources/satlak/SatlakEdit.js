@@ -1,4 +1,3 @@
-// src/resources/satlak/SatlakEdit.js
 import React from "react";
 import {
   Edit,
@@ -10,13 +9,14 @@ import {
   TextInput,
   NumberInput,
   useNotify,
-  FormDataConsumer,    // ⬅️ tambahkan ini
+  FormDataConsumer,
 } from "react-admin";
+import Box from "@material-ui/core/Box";
 import SignaturePadInput from "../../helpers/input/SignaturePadInput";
 import CommanderSignatureUpload from "./CommanderSignatureUpload";
 import StempelInput from "../../helpers/input/StempelInput";
-import Box from "@material-ui/core/Box";
 
+// Normalizer: pastikan tanda_tangan_komandan = STRING URL
 const toStringUrl = (v) => {
   if (Array.isArray(v)) {
     const f = v[0];
@@ -24,11 +24,13 @@ const toStringUrl = (v) => {
     if (f && typeof f === "object") return f.src || "";
     return "";
   }
-  if (typeof v === "object" && v !== null) return v.src || "";
+  if (v && typeof v === "object") return v.src || "";
   return v ?? "";
 };
 
-const SatlakTitle = ({ record }) => <span>Edit SATLAK {record ? `"${record.nama}"` : ""}</span>;
+const SatlakTitle = ({ record }) => (
+  <span>Edit SATLAK {record ? `"${record.nama}"` : ""}</span>
+);
 
 const SatlakEdit = (props) => {
   const notify = useNotify();
@@ -51,7 +53,12 @@ const SatlakEdit = (props) => {
       >
         <FormTab label="Keterangan">
           <TextInput source="id" disabled />
-          <ReferenceInput source="lingkup_id" reference="lingkup" label="Lingkup" sort={{ field: "id", order: "ASC" }}>
+          <ReferenceInput
+            source="lingkup_id"
+            reference="lingkup"
+            label="Lingkup"
+            sort={{ field: "id", order: "ASC" }}
+          >
             <SelectInput optionText="kode" />
           </ReferenceInput>
           <TextInput source="nama" label="Nama" />
@@ -71,19 +78,29 @@ const SatlakEdit = (props) => {
         <FormTab label="Komandan">
           <TextInput source="nama_komandan" label="Nama Komandan" />
           <NumberInput source="nrp_komandan" label="NRP Komandan" />
-          <ReferenceInput source="pangkat_komandan_id" reference="pangkat" label="Pangkat Komandan" sort={{ field: "id", order: "ASC" }}>
+          <ReferenceInput
+            source="pangkat_komandan_id"
+            reference="pangkat"
+            label="Pangkat Komandan"
+            sort={{ field: "id", order: "ASC" }}
+          >
             <AutocompleteInput optionText="kode" />
           </ReferenceInput>
-          <ReferenceInput source="korps_komandan_id" reference="korps" label="Korps Komandan" sort={{ field: "id", order: "ASC" }}>
+          <ReferenceInput
+            source="korps_komandan_id"
+            reference="korps"
+            label="Korps Komandan"
+            sort={{ field: "id", order: "ASC" }}
+          >
             <AutocompleteInput optionText="kode" />
           </ReferenceInput>
         </FormTab>
 
         <FormTab label="Tanda Tangan Komandan">
-          {/* Upload — set field ke STRING URL */}
+          {/* Upload → set field ke STRING URL */}
           <CommanderSignatureUpload source="tanda_tangan_komandan" />
 
-          {/* Sinkron dengan SignaturePad di tempat yang sama */}
+          {/* Preview + sinkron SignaturePad */}
           <FormDataConsumer subscription={{ values: true }}>
             {({ formData }) => {
               const url = formData?.tanda_tangan_komandan || "";
@@ -94,16 +111,14 @@ const SatlakEdit = (props) => {
                       <img
                         src={url}
                         alt="Preview tanda tangan komandan"
-                        style={{ maxWidth: "100%", height: "auto", borderRadius: 8, opacity: 0.85 }}
+                        style={{ maxWidth: "100%", height: "auto", borderRadius: 8, opacity: 0.9 }}
                       />
                     </Box>
                   ) : null}
-
                   <SignaturePadInput
-                    key={url || "pad-empty"} // ⬅️ re-mount saat URL berubah
+                    key={url || "pad-empty"}
                     source="tanda_tangan_komandan"
                   />
-                      
                 </Box>
               );
             }}
