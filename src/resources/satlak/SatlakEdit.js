@@ -16,7 +16,6 @@ import SignaturePadInput from "../../helpers/input/SignaturePadInput";
 import CommanderSignatureUpload from "./CommanderSignatureUpload";
 import StempelInput from "../../helpers/input/StempelInput";
 
-// Normalizer: pastikan tanda_tangan_komandan = STRING URL
 const toStringUrl = (v) => {
   if (Array.isArray(v)) {
     const f = v[0];
@@ -53,12 +52,7 @@ const SatlakEdit = (props) => {
       >
         <FormTab label="Keterangan">
           <TextInput source="id" disabled />
-          <ReferenceInput
-            source="lingkup_id"
-            reference="lingkup"
-            label="Lingkup"
-            sort={{ field: "id", order: "ASC" }}
-          >
+          <ReferenceInput source="lingkup_id" reference="lingkup" label="Lingkup" sort={{ field: "id", order: "ASC" }}>
             <SelectInput optionText="kode" />
           </ReferenceInput>
           <TextInput source="nama" label="Nama" />
@@ -78,20 +72,10 @@ const SatlakEdit = (props) => {
         <FormTab label="Komandan">
           <TextInput source="nama_komandan" label="Nama Komandan" />
           <NumberInput source="nrp_komandan" label="NRP Komandan" />
-          <ReferenceInput
-            source="pangkat_komandan_id"
-            reference="pangkat"
-            label="Pangkat Komandan"
-            sort={{ field: "id", order: "ASC" }}
-          >
+          <ReferenceInput source="pangkat_komandan_id" reference="pangkat" label="Pangkat Komandan" sort={{ field: "id", order: "ASC" }}>
             <AutocompleteInput optionText="kode" />
           </ReferenceInput>
-          <ReferenceInput
-            source="korps_komandan_id"
-            reference="korps"
-            label="Korps Komandan"
-            sort={{ field: "id", order: "ASC" }}
-          >
+          <ReferenceInput source="korps_komandan_id" reference="korps" label="Korps Komandan" sort={{ field: "id", order: "ASC" }}>
             <AutocompleteInput optionText="kode" />
           </ReferenceInput>
         </FormTab>
