@@ -586,8 +586,8 @@ const SimCanvasDepan = forwardRef((props, ref) => {
         {sidikStatus === "loaded" && (
           <Image
             image={sidik_jari_pemohon}
-            x={4}
-            y={85}
+            x={10}
+            y={80}
             scaleY={0.12}
             scaleX={0.12}
           />
