@@ -749,7 +749,7 @@ const FingerprintInput = (props) => {
     });
   }, []);
 
-  // IMPROVED: Advanced background removal dengan detail preservation
+  // IMPROVED: Advanced background removal dengan line thickening
   const advancedBackgroundRemoval = useCallback(async (file) => {
     return new Promise((resolve, reject) => {
       const canvas = document.createElement('canvas');
@@ -774,7 +774,7 @@ const FingerprintInput = (props) => {
           data[i + 2] = gray;
         }
 
-        // STEP 2: Calculate global statistics for adaptive thresholding
+        // STEP 2: Calculate statistics
         let minBrightness = 255;
         let maxBrightness = 0;
         let totalBrightness = 0;
@@ -789,70 +789,92 @@ const FingerprintInput = (props) => {
         }
 
         const avgBrightness = totalBrightness / pixelCount;
-        
-        // IMPROVED: Adaptive threshold based on image statistics
-        const backgroundThreshold = avgBrightness + (maxBrightness - avgBrightness) * 0.5;
-        const foregroundThreshold = avgBrightness - (avgBrightness - minBrightness) * 0.3;
+        const backgroundThreshold = avgBrightness + (maxBrightness - avgBrightness) * 0.4;
+        const foregroundThreshold = avgBrightness * 0.7; // More aggressive
 
         const newData = new Uint8ClampedArray(data);
 
-        // STEP 3: Process each pixel with improved algorithm
+        // STEP 3: Detect ridge pixels with dilation (thickening)
+        const ridgeMap = new Uint8Array(width * height);
+        
         for (let y = 1; y < height - 1; y++) {
           for (let x = 1; x < width - 1; x++) {
             const idx = (y * width + x) * 4;
             const current = data[idx];
 
-            // Calculate local contrast (edge detection)
-            let localVariance = 0;
-            let neighborSum = 0;
-            const neighbors = [];
+            // Calculate local variance in larger neighborhood (3x3)
+            let minLocal = 255;
+            let maxLocal = 0;
 
             for (let dy = -1; dy <= 1; dy++) {
               for (let dx = -1; dx <= 1; dx++) {
                 const neighborIdx = ((y + dy) * width + (x + dx)) * 4;
                 const neighborVal = data[neighborIdx];
-                neighbors.push(neighborVal);
-                neighborSum += neighborVal;
+                minLocal = Math.min(minLocal, neighborVal);
+                maxLocal = Math.max(maxLocal, neighborVal);
               }
             }
 
-            const localAvg = neighborSum / 9;
-            for (const n of neighbors) {
-              localVariance += Math.pow(n - localAvg, 2);
-            }
-            localVariance = Math.sqrt(localVariance / 9);
+            const localContrast = maxLocal - minLocal;
 
-            // IMPROVED: Better classification logic
-            // High variance = edge/ridge detail (KEEP & ENHANCE)
-            if (localVariance > 15) {
-              // This is a ridge or detail area
+            // Mark as ridge if:
+            // 1. Dark pixel (below foreground threshold) OR
+            // 2. High local contrast (edge detected)
+            if (current < foregroundThreshold || localContrast > 30) {
+              ridgeMap[y * width + x] = 1;
+            }
+          }
+        }
+
+        // STEP 4: Dilate ridges to make them thicker (morphological dilation)
+        const dilatedMap = new Uint8Array(width * height);
+        const dilationRadius = 1; // Increase for thicker lines (1 = 3x3 kernel)
+
+        for (let y = dilationRadius; y < height - dilationRadius; y++) {
+          for (let x = dilationRadius; x < width - dilationRadius; x++) {
+            let hasRidge = false;
+
+            // Check if any neighbor is a ridge
+            for (let dy = -dilationRadius; dy <= dilationRadius; dy++) {
+              for (let dx = -dilationRadius; dx <= dilationRadius; dx++) {
+                if (ridgeMap[(y + dy) * width + (x + dx)] === 1) {
+                  hasRidge = true;
+                  break;
+                }
+              }
+              if (hasRidge) break;
+            }
+
+            if (hasRidge) {
+              dilatedMap[y * width + x] = 1;
+            }
+          }
+        }
+
+        // STEP 5: Apply the ridge map to create final image
+        for (let y = 0; y < height; y++) {
+          for (let x = 0; x < width; x++) {
+            const idx = (y * width + x) * 4;
+            const current = data[idx];
+
+            if (dilatedMap[y * width + x] === 1) {
+              // This is a ridge pixel or near ridge
               newData[idx + 3] = 255; // Fully opaque
               
-              // PRESERVE original darkness, only slightly enhance
-              const enhancedValue = Math.max(0, current - 20);
-              newData[idx] = enhancedValue;
-              newData[idx + 1] = enhancedValue;
-              newData[idx + 2] = enhancedValue;
+              // Make it DARKER and more visible
+              const darkenedValue = Math.max(0, current * 0.4); // Much darker
+              newData[idx] = darkenedValue;
+              newData[idx + 1] = darkenedValue;
+              newData[idx + 2] = darkenedValue;
             }
-            // Very bright with low variance = background (REMOVE)
-            else if (current > backgroundThreshold && localVariance < 10) {
+            // Very bright = background
+            else if (current > backgroundThreshold) {
               newData[idx + 3] = 0; // Transparent
             }
-            // Dark area with low variance = valley between ridges (KEEP but lighter)
-            else if (current < foregroundThreshold) {
-              newData[idx + 3] = 255; // Opaque
-              // Keep darker pixels dark but don't make them too black
-              newData[idx] = current;
-              newData[idx + 1] = current;
-              newData[idx + 2] = current;
-            }
-            // Medium brightness = transition area (GRADUAL transparency)
+            // Medium brightness = transition
             else {
-              // Smooth transition based on brightness
               const normalizedBrightness = (current - foregroundThreshold) / (backgroundThreshold - foregroundThreshold);
               newData[idx + 3] = Math.max(0, Math.min(255, 255 * (1 - normalizedBrightness)));
-              
-              // Keep original color
               newData[idx] = current;
               newData[idx + 1] = current;
               newData[idx + 2] = current;
@@ -860,12 +882,12 @@ const FingerprintInput = (props) => {
           }
         }
 
-        // STEP 4: Apply slight contrast enhancement only to visible pixels
+        // STEP 6: Strong contrast enhancement for visible pixels
         for (let i = 0; i < newData.length; i += 4) {
-          if (newData[i + 3] > 0) { // Only process non-transparent pixels
+          if (newData[i + 3] > 128) { // Only process mostly opaque pixels
             const brightness = newData[i];
-            // Subtle contrast enhancement
-            const enhanced = ((brightness - 127) * 1.1) + 127;
+            // Strong contrast enhancement
+            const enhanced = ((brightness - 127) * 1.5) + 127;
             const clamped = Math.max(0, Math.min(255, enhanced));
             newData[i] = clamped;
             newData[i + 1] = clamped;
