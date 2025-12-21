@@ -644,8 +644,6 @@
 // };
 
 // export default FingerprintInput;
-
-
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useInput } from "react-admin";
 import {
@@ -861,8 +859,8 @@ const FingerprintInput = (props) => {
               // This is a ridge pixel or near ridge
               newData[idx + 3] = 255; // Fully opaque
               
-              // Make it DARKER and more visible
-              const darkenedValue = Math.max(0, current * 0.4); // Much darker
+              // Make it darker but not too dark - balanced darkness
+              const darkenedValue = Math.max(0, current * 0.65); // Moderate darkening
               newData[idx] = darkenedValue;
               newData[idx + 1] = darkenedValue;
               newData[idx + 2] = darkenedValue;
@@ -882,12 +880,12 @@ const FingerprintInput = (props) => {
           }
         }
 
-        // STEP 6: Strong contrast enhancement for visible pixels
+        // STEP 6: Moderate contrast enhancement for visible pixels
         for (let i = 0; i < newData.length; i += 4) {
           if (newData[i + 3] > 128) { // Only process mostly opaque pixels
             const brightness = newData[i];
-            // Strong contrast enhancement
-            const enhanced = ((brightness - 127) * 1.5) + 127;
+            // Moderate contrast enhancement
+            const enhanced = ((brightness - 127) * 1.3) + 127;
             const clamped = Math.max(0, Math.min(255, enhanced));
             newData[i] = clamped;
             newData[i + 1] = clamped;
