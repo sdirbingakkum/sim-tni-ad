@@ -693,8 +693,8 @@ const SimCanvasDepan = forwardRef((props, ref) => {
                 image={tanda_tangan_komandan_satlak}
                 width={140}
                 height={30}
-                x={0}
-                y={10}
+                x={5}
+                y={8}
               />
             )}
 
