@@ -575,7 +575,7 @@ const SimCanvasDepan = forwardRef((props, ref) => {
         {pemohonStatus === "loaded" && (
           <Image
             image={tanda_tangan_pemohon}
-            x={-25}
+            x={-23}
             y={170}
             width={150}
             height={30}
@@ -677,7 +677,7 @@ const SimCanvasDepan = forwardRef((props, ref) => {
         </Group>
 
         {/* Commander Info */}
-        <Group x={160} y={140}>
+        <Group x={157} y={140}>
           <Group>
             <Text
               text={safeText(label_komandan)}
@@ -693,7 +693,7 @@ const SimCanvasDepan = forwardRef((props, ref) => {
                 image={tanda_tangan_komandan_satlak}
                 width={140}
                 height={30}
-                x={10}
+                x={12}
                 y={8}
               />
             )}
@@ -721,10 +721,10 @@ const SimCanvasDepan = forwardRef((props, ref) => {
         {fotoStatus === "loaded" && (
           <Image
             image={pas_foto_pemohon}
-            x={86}
-            y={108}
-            width={72}
-            height={86}
+            x={84}
+            y={110}
+            width={74}
+            height={88}
           />
         )}
 
