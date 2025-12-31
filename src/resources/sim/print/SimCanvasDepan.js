@@ -587,7 +587,7 @@ const SimCanvasDepan = forwardRef((props, ref) => {
           <Image
             image={sidik_jari_pemohon}
             x={15}
-            y={83}
+            y={82}
             scaleY={0.13}
             scaleX={0.13}
           />
@@ -721,8 +721,8 @@ const SimCanvasDepan = forwardRef((props, ref) => {
         {fotoStatus === "loaded" && (
           <Image
             image={pas_foto_pemohon}
-            x={84}
-            y={110}
+            x={85}
+            y={106}
             width={74}
             height={88}
           />
