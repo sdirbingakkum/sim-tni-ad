@@ -677,7 +677,7 @@ const SimCanvasDepan = forwardRef((props, ref) => {
         </Group>
 
         {/* Commander Info */}
-        <Group x={153} y={140}>
+        <Group x={145} y={140}>
           <Group>
             <Text
               text={safeText(label_komandan)}
