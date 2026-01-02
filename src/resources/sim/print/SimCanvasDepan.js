@@ -571,17 +571,6 @@ const SimCanvasDepan = forwardRef((props, ref) => {
           align="center"
         />
 
-        {/* Applicant Signature - MOVED BEFORE pas_foto so it appears behind */}
-        {pemohonStatus === "loaded" && (
-          <Image
-            image={tanda_tangan_pemohon}
-            x={-20}
-            y={170}
-            width={150}
-            height={30}
-          />
-        )}
-
         {/* Fingerprint */}
         {sidikStatus === "loaded" && (
           <Image
@@ -593,6 +582,17 @@ const SimCanvasDepan = forwardRef((props, ref) => {
           />
         )}
 
+  {/* Applicant Signature - MOVED BEFORE pas_foto so it appears behind */}
+        {pemohonStatus === "loaded" && (
+          <Image
+            image={tanda_tangan_pemohon}
+            x={-20}
+            y={170}
+            width={150}
+            height={30}
+          />
+        )}
+  
         {/* Personal Info */}
         <Group x={15} y={55}>
           <Group>
