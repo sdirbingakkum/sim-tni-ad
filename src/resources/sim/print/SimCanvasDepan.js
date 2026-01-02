@@ -691,10 +691,10 @@ const SimCanvasDepan = forwardRef((props, ref) => {
             {komandanStatus === "loaded" && (
               <Image
                 image={tanda_tangan_komandan_satlak}
-                width={140}
-                height={30}
+                width={150}
+                height={40}
                 x={12}
-                y={2}
+                y={1}
               />
             )}
 
