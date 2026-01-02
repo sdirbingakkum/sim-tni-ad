@@ -707,7 +707,6 @@ const SimCanvasDepan = forwardRef((props, ref) => {
                   height={30}
                   x={28}
                   y={0}
-                  filters={[Konva.Filters.Brighten, Konva.Filters.Contrast]}
                   brightness={-0.1}
                   contrast={30}
                 />
