@@ -687,40 +687,18 @@ const SimCanvasDepan = forwardRef((props, ref) => {
               align="center"
             />
 
-            // {/* Commander Signature */}
-            // {komandanStatus === "loaded" && (
-            //   <Image
-            //     image={tanda_tangan_komandan_satlak}
-            //     width={150}
-            //     height={30}
-            //     x={28}
-            //     y={0}
-            //   />
-            // )}
-
-             {/* Commander Signature - Enhanced with filters for bold effect */}
+            {/* Commander Signature */}
             {komandanStatus === "loaded" && (
-              <>
-                <Image
-                  image={tanda_tangan_komandan_satlak}
-                  width={150}
-                  height={30}
-                  x={28}
-                  y={0}
-                  brightness={-0.1}
-                  contrast={30}
-                />
-                {/* Duplicate layer for extra boldness */}
-                <Image
-                  image={tanda_tangan_komandan_satlak}
-                  width={150}
-                  height={30}
-                  x={28}
-                  y={0}
-                  opacity={0.4}
-                />
-              </>
+              <Image
+                image={tanda_tangan_komandan_satlak}
+                width={150}
+                height={30}
+                x={28}
+                y={0}
+              />
             )}
+
+            
 
             <Text
               text={safeText(nama_komandan)}
