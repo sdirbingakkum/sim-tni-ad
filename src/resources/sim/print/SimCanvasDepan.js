@@ -705,7 +705,7 @@ const SimCanvasDepan = forwardRef((props, ref) => {
                 width={150}
                 height={30}
                 x={28}
-                y={0}
+                y={0.4}
               />
             )}      
 
