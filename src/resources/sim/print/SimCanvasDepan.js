@@ -698,7 +698,7 @@ const SimCanvasDepan = forwardRef((props, ref) => {
             //   />
             // )}
 
-            {/* Commander Signature - Enhanced with filters for bold effect */}
+             {/* Commander Signature - Enhanced with filters for bold effect */}
             {komandanStatus === "loaded" && (
               <>
                 <Image
