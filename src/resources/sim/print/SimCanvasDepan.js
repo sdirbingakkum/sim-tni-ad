@@ -698,7 +698,7 @@ const SimCanvasDepan = forwardRef((props, ref) => {
             //   />
             // )}
 
-                {/* Commander Signature - Enhanced with filters for bold effect */}
+            {/* Commander Signature - Enhanced with filters for bold effect */}
             {komandanStatus === "loaded" && (
               <>
                 <Image
@@ -707,7 +707,7 @@ const SimCanvasDepan = forwardRef((props, ref) => {
                   height={30}
                   x={28}
                   y={0}
-                  filters={[window.Konva.Filters.Brighten, window.Konva.Filters.Contrast]}
+                  filters={[Konva.Filters.Brighten, Konva.Filters.Contrast]}
                   brightness={-0.1}
                   contrast={30}
                 />
