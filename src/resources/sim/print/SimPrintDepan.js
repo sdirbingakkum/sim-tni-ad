@@ -472,7 +472,7 @@ const SimPrintDepan = ({
         width: 325,
         height: 204,
         quality: 2,
-        pixelRatio: 10,
+        pixelRatio: 3,
       })
     );
   });
