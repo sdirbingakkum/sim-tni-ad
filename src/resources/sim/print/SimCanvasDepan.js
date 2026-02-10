@@ -687,7 +687,16 @@ const SimCanvasDepan = forwardRef((props, ref) => {
               align="center"
             />
 
-            
+             {/* Commander Signature */}
+            {komandanStatus === "loaded" && (
+              <Image
+                image={tanda_tangan_komandan_satlak}
+                width={160}
+                height={30}
+                x={28}
+                y={5}
+              />
+            )}      
 
             <Text
               text={safeText(nama_komandan)}
@@ -730,16 +739,7 @@ const SimCanvasDepan = forwardRef((props, ref) => {
             opacity={0.7}
           />
         )}
-        {/* Commander Signature */}
-            {komandanStatus === "loaded" && (
-              <Image
-                image={tanda_tangan_komandan_satlak}
-                width={160}
-                height={30}
-                x={28}
-                y={5}
-              />
-            )}      
+       
 
       </Layer>
     </Stage>
